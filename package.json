@@ -1,6 +1,6 @@
 {
   "name": "universal-change-review",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Local, read-only Git change review tools for Codex, Claude Code, Cursor, and MCP clients.",
   "type": "module",
   "bin": {
@@ -19,5 +19,5 @@
     "type": "git",
     "url": "git+https://github.com/IP-DZ/universal-change-review.git"
   },
-  "files": ["bin", "src", "plugins", ".claude-plugin", ".cursor", ".mcp.json", "README.md", "LICENSE"]
+  "files": ["bin", "src", "plugins", "skills", "commands", ".claude-plugin", ".cursor", ".mcp.json", "README.md", "LICENSE"]
 }

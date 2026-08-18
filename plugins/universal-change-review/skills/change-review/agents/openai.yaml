@@ -1,0 +1,13 @@
+interface:
+  display_name: "Change Review"
+  short_description: "Review task-scoped Git changes with local evidence"
+  default_prompt: "Use $change-review to inspect this workspace's changes and report findings by severity."
+
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "universal-change-review"
+      description: "Local read-only Git change summaries, diffs, and task baselines"
+
+policy:
+  allow_implicit_invocation: true

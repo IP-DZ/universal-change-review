@@ -1,6 +1,6 @@
 {
   "name": "universal-change-review",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Review total and task-scoped Git changes locally from Codex, Claude Code, Cursor, and any MCP client.",
   "author": {
     "name": "IP-DZ"
@@ -13,7 +13,11 @@
     "developerName": "IP-DZ",
     "category": "Productivity",
     "capabilities": ["MCP tools", "Git diff", "task snapshots"],
-    "defaultPrompt": "Review the changes in this workspace. Start with a concise summary, then inspect risky diffs."
+    "defaultPrompt": [
+      "Review this workspace's changes and report findings by severity.",
+      "Start a task baseline, then implement my requested change.",
+      "Compare this task with its baseline and summarize the result."
+    ]
   },
   "mcpServers": "./.mcp.json"
 }

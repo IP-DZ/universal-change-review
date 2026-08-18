@@ -16,6 +16,25 @@ const tools = [
   tool('changes_snapshots', 'List task baselines stored in this repository.', { cwd: string('Repository path; defaults to server cwd.') }),
 ]
 
+const prompts = [
+  {
+    name: 'review-changes',
+    description: 'Review current repository changes and produce an evidence-backed report.',
+    arguments: [
+      { name: 'cwd', description: 'Repository path. Use the active workspace when omitted.', required: false },
+      { name: 'focus', description: 'Optional review focus, such as security, correctness, or performance.', required: false },
+    ],
+  },
+  {
+    name: 'begin-change-task',
+    description: 'Start an implementation task with a baseline for task-scoped change review.',
+    arguments: [
+      { name: 'cwd', description: 'Repository path. Use the active workspace when omitted.', required: false },
+      { name: 'label', description: 'Short task label.', required: false },
+    ],
+  },
+]
+
 export async function runMcp() {
   let buffer = ''
   process.stdin.setEncoding('utf8')
@@ -36,10 +55,15 @@ async function handle(message) {
   if (!('id' in message)) return
   if (message.method === 'initialize') return reply(message.id, {
     protocolVersion: message.params?.protocolVersion ?? '2025-03-26',
-    capabilities: { tools: { listChanged: false } },
-    serverInfo: { name: 'universal-change-review', version: '0.1.0' },
+    capabilities: { tools: { listChanged: false }, prompts: { listChanged: false } },
+    serverInfo: { name: 'universal-change-review', version: '0.2.0' },
   })
   if (message.method === 'tools/list') return reply(message.id, { tools })
+  if (message.method === 'prompts/list') return reply(message.id, { prompts })
+  if (message.method === 'prompts/get') {
+    try { return reply(message.id, getPrompt(message.params?.name, message.params?.arguments ?? {})) }
+    catch (error) { return failure(message.id, -32602, String(error?.message ?? error)) }
+  }
   if (message.method === 'tools/call') {
     try {
       const result = callTool(message.params?.name, message.params?.arguments ?? {})
@@ -49,6 +73,19 @@ async function handle(message) {
     }
   }
   return failure(message.id, -32601, `Method not found: ${message.method}`)
+}
+
+function getPrompt(name, args) {
+  const cwd = args.cwd ? ` Use repository: ${args.cwd}.` : ''
+  if (name === 'begin-change-task') {
+    const label = args.label ? ` Label the baseline: ${args.label}.` : ''
+    return { description: 'Create a task baseline before implementation.', messages: [{ role: 'user', content: { type: 'text', text: `Before editing code, call changes_begin and retain the snapshot id for this task.${cwd}${label} Then inspect the repository and implement the requested change.` } }] }
+  }
+  if (name === 'review-changes') {
+    const focus = args.focus ? ` Pay special attention to ${args.focus}.` : ''
+    return { description: 'Review current changes with evidence and severity.', messages: [{ role: 'user', content: { type: 'text', text: `Review the current code changes.${cwd}${focus} Call changes_summary first, then inspect relevant files with changes_diff. If a task snapshot id is available, call changes_since to separate task changes from pre-existing work. Report findings first, ordered by severity, with file and line evidence. Then report changed behavior, validation performed, and remaining risks. Do not modify files unless explicitly asked to fix a finding.` } }] }
+  }
+  throw new Error(`Unknown prompt: ${name}`)
 }
 
 function callTool(name, args) {

@@ -1,7 +1,17 @@
 ---
-description: Review total and task-scoped Git changes after editing code.
+description: Review Git Changes with MCP evidence before completing implementation work.
 globs:
 alwaysApply: false
 ---
 
-Before a substantial implementation, use `changes_begin`. After editing, use `changes_since` with the saved snapshot id. Before claiming completion, inspect `changes_summary` and relevant `changes_diff` output. Summarize changed files, behavior, validation, and remaining risks. The review tools are read-only for source files.
+Before a substantial implementation, call `changes_begin` and retain the snapshot id. After editing, call `changes_since` so task changes are not confused with pre-existing work.
+
+Before claiming completion:
+
+1. Call `changes_summary`.
+2. Inspect every behaviorally relevant or risky file with `changes_diff`. If output is truncated, inspect files individually.
+3. Check correctness, regressions, error paths, security, performance, compatibility, and missing tests as applicable.
+4. Report actionable findings first using P0-P3 severity and file/line evidence.
+5. Then summarize changed behavior, validation actually run, and remaining risks.
+
+Do not modify files during a review unless the user asks for fixes. The MCP review tools are read-only for source files.

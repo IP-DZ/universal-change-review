@@ -1,6 +1,6 @@
 # Universal Change Review
 
-Local, read-only Git change review for Codex, Claude Code, Cursor, and any MCP-compatible client.
+Local, read-only Git change review for Codex, Claude Code, Cursor, and any MCP-compatible client. Version 0.2 combines MCP tools with reusable review instructions and commands, so clients know both **how to read Changes** and **how to review them**.
 
 It provides total workspace diffs, staged/unstaged views, file-level inspection, and task-scoped snapshots that isolate only the changes made after a task begins. Source files and the real Git index are never modified by the review tools.
 
@@ -20,6 +20,13 @@ It provides total workspace diffs, staged/unstaged views, file-level inspection,
 | `changes_since` | Compare the current repository with a task baseline |
 | `changes_snapshots` | List saved baselines for the current repository |
 
+The MCP server also exposes two reusable prompts when the client supports MCP prompts:
+
+| Prompt | Purpose |
+| --- | --- |
+| `review-changes` | Run a findings-first review of the current Changes |
+| `begin-change-task` | Capture a baseline before implementation begins |
+
 Task snapshots use a temporary Git index and store only a Git tree id plus metadata under `.git/universal-change-review/`. Ignored files are not captured. No source code is uploaded.
 
 ## Codex
@@ -32,11 +39,11 @@ codex plugin marketplace add ./universal-change-review
 codex plugin install universal-change-review@ip-dz
 ```
 
-The Codex package includes the `change-review` skill and the MCP server definition.
+The Codex package includes the `change-review` skill, UI metadata, starter prompts, and the MCP server definition. Invoke the skill explicitly with `$change-review`, or ask Codex to review the current Changes.
 
 ## Claude Code
 
-Install from the repository as a Claude Code plugin, or add the MCP server directly:
+Install from the repository as a Claude Code plugin to get its skill and `/review-changes` command, or add the MCP server directly:
 
 ```bash
 claude mcp add universal-change-review --scope user -- npx -y github:IP-DZ/universal-change-review mcp
@@ -44,7 +51,9 @@ claude mcp add universal-change-review --scope user -- npx -y github:IP-DZ/unive
 
 ## Cursor
 
-Copy `.cursor/mcp.json` and `.cursor/rules/change-review.mdc` into a project, or add this server to `~/.cursor/mcp.json`:
+For a project-scoped setup, copy `.cursor/mcp.json`, `.cursor/rules/change-review.mdc`, and `.cursor/commands/review-changes.md` into a project. Then use `/review-changes` in Cursor chat.
+
+For a global MCP setup, merge this server into `~/.cursor/mcp.json` without replacing existing entries:
 
 ```json
 {
@@ -56,6 +65,15 @@ Copy `.cursor/mcp.json` and `.cursor/rules/change-review.mdc` into a project, or
   }
 }
 ```
+
+Cursor's global MCP configuration makes the tools available in every repository. Cursor rules and custom commands are project-scoped, so copy the provided rule and command into repositories where you want the guided workflow.
+
+## Recommended workflow
+
+1. Before a substantial task, ask the agent to start a change baseline.
+2. Implement and validate the requested behavior.
+3. Run `$change-review`, `/review-changes`, or the MCP `review-changes` prompt depending on the client.
+4. Review findings ordered by P0-P3 severity, followed by changed behavior, validation, and remaining risks.
 
 ## CLI
 
