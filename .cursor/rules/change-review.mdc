@@ -1,0 +1,7 @@
+---
+description: Review total and task-scoped Git changes after editing code.
+globs:
+alwaysApply: false
+---
+
+Before a substantial implementation, use `changes_begin`. After editing, use `changes_since` with the saved snapshot id. Before claiming completion, inspect `changes_summary` and relevant `changes_diff` output. Summarize changed files, behavior, validation, and remaining risks. The review tools are read-only for source files.

@@ -1,0 +1,19 @@
+{
+  "name": "universal-change-review",
+  "version": "0.1.0",
+  "description": "Review total and task-scoped Git changes locally from Codex, Claude Code, Cursor, and any MCP client.",
+  "author": {
+    "name": "IP-DZ"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Universal Change Review",
+    "shortDescription": "Review Git changes without modifying your worktree.",
+    "longDescription": "Universal Change Review provides local, read-only change summaries, full diffs, and task-scoped snapshots through a shared MCP server.",
+    "developerName": "IP-DZ",
+    "category": "Productivity",
+    "capabilities": ["MCP tools", "Git diff", "task snapshots"],
+    "defaultPrompt": "Review the changes in this workspace. Start with a concise summary, then inspect risky diffs."
+  },
+  "mcpServers": "./.mcp.json"
+}

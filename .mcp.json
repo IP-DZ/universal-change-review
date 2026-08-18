@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "universal-change-review": {
+      "command": "npx",
+      "args": ["-y", "github:IP-DZ/universal-change-review", "mcp"]
+    }
+  }
+}

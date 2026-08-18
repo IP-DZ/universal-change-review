@@ -1,0 +1,20 @@
+{
+  "name": "ip-dz",
+  "interface": {
+    "displayName": "IP-DZ Plugins"
+  },
+  "plugins": [
+    {
+      "name": "universal-change-review",
+      "source": {
+        "source": "local",
+        "path": "./plugins/universal-change-review"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}
