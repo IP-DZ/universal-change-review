@@ -7,6 +7,8 @@ description: Review Git changes with local MCP evidence, isolate edits made duri
 
 Use the Universal Change Review MCP tools to make changes inspectable. Treat tool output as evidence, not as proof that behavior is correct.
 
+When the user asks to see, open, or visually inspect Changes, call `changes_open_panel` and provide its localhost URL. The panel is read-only and updates while the MCP server remains running.
+
 1. Before a substantial implementation, call `changes_begin` and retain its snapshot id in the task context. Do not create a baseline for a read-only review.
 2. After edits, call `changes_since` with that id. Separate task-scoped changes from work that already existed.
 3. Call `changes_summary` before completion. Inspect every behaviorally relevant or risky file with `changes_diff`; use file-scoped calls when the total diff is truncated.

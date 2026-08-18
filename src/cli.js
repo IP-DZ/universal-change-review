@@ -1,5 +1,6 @@
 import { beginSnapshot, diffSince, listSnapshots, workingDiff, workingSummary } from './git.js'
 import { runMcp } from './mcp.js'
+import { openPanel } from './panel.js'
 
 export async function runCli(argv) {
   const command = argv[0] || 'help'
@@ -10,7 +11,8 @@ export async function runCli(argv) {
   if (command === 'begin') return print(beginSnapshot(options.cwd, options.label || 'task'), options.json)
   if (command === 'since') return print(diffSince(options.cwd, options.id, options.maxChars), options.json)
   if (command === 'snapshots') return print(listSnapshots(options.cwd), options.json)
-  process.stdout.write(`Universal Change Review\n\nCommands:\n  summary [--scope all|staged|unstaged]\n  diff [--scope ...] [--file path]\n  begin [--label text]\n  since --id snapshot-id\n  snapshots\n  mcp\n\nOptions:\n  --cwd path  --json  --max-chars number\n`)
+  if (command === 'web') return print(await openPanel(options.cwd, { port: options.port }), options.json)
+  process.stdout.write(`Universal Change Review\n\nCommands:\n  summary [--scope all|staged|unstaged]\n  diff [--scope ...] [--file path]\n  begin [--label text]\n  since --id snapshot-id\n  snapshots\n  web [--port number]\n  mcp\n\nOptions:\n  --cwd path  --json  --max-chars number\n`)
 }
 
 function parse(args) {

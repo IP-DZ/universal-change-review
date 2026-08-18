@@ -1,4 +1,5 @@
 import { beginSnapshot, diffSince, listSnapshots, workingDiff, workingSummary } from './git.js'
+import { openPanel } from './panel.js'
 
 const tools = [
   tool('changes_summary', 'Summarize current Git changes without modifying files.', {
@@ -14,6 +15,9 @@ const tools = [
     cwd: string('Repository path; defaults to server cwd.'), snapshotId: string('Snapshot id from changes_begin.', undefined, true), maxChars: number('Maximum diff characters.', 120000),
   }),
   tool('changes_snapshots', 'List task baselines stored in this repository.', { cwd: string('Repository path; defaults to server cwd.') }),
+  tool('changes_open_panel', 'Start a local read-only Changes panel with live file and diff updates. Returns a localhost URL to open in a browser.', {
+    cwd: string('Repository path; defaults to server cwd.'), port: number('Optional local port; uses a random available port by default.'),
+  }),
 ]
 
 const prompts = [
@@ -56,7 +60,7 @@ async function handle(message) {
   if (message.method === 'initialize') return reply(message.id, {
     protocolVersion: message.params?.protocolVersion ?? '2025-03-26',
     capabilities: { tools: { listChanged: false }, prompts: { listChanged: false } },
-    serverInfo: { name: 'universal-change-review', version: '0.2.0' },
+    serverInfo: { name: 'universal-change-review', version: '0.3.0' },
   })
   if (message.method === 'tools/list') return reply(message.id, { tools })
   if (message.method === 'prompts/list') return reply(message.id, { prompts })
@@ -66,7 +70,7 @@ async function handle(message) {
   }
   if (message.method === 'tools/call') {
     try {
-      const result = callTool(message.params?.name, message.params?.arguments ?? {})
+      const result = await callTool(message.params?.name, message.params?.arguments ?? {})
       return reply(message.id, { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }], structuredContent: result })
     } catch (error) {
       return reply(message.id, { content: [{ type: 'text', text: String(error?.message ?? error) }], isError: true })
@@ -83,18 +87,19 @@ function getPrompt(name, args) {
   }
   if (name === 'review-changes') {
     const focus = args.focus ? ` Pay special attention to ${args.focus}.` : ''
-    return { description: 'Review current changes with evidence and severity.', messages: [{ role: 'user', content: { type: 'text', text: `Review the current code changes.${cwd}${focus} Call changes_summary first, then inspect relevant files with changes_diff. If a task snapshot id is available, call changes_since to separate task changes from pre-existing work. Report findings first, ordered by severity, with file and line evidence. Then report changed behavior, validation performed, and remaining risks. Do not modify files unless explicitly asked to fix a finding.` } }] }
+    return { description: 'Review current changes with evidence and severity.', messages: [{ role: 'user', content: { type: 'text', text: `Review the current code changes.${cwd}${focus} Call changes_open_panel and provide its localhost URL for visual inspection. Call changes_summary, then inspect relevant files with changes_diff. If a task snapshot id is available, call changes_since to separate task changes from pre-existing work. Report findings first, ordered by severity, with file and line evidence. Then report changed behavior, validation performed, and remaining risks. Do not modify files unless explicitly asked to fix a finding.` } }] }
   }
   throw new Error(`Unknown prompt: ${name}`)
 }
 
-function callTool(name, args) {
+async function callTool(name, args) {
   const cwd = args.cwd || process.cwd()
   if (name === 'changes_summary') return workingSummary(cwd, args.scope || 'all')
   if (name === 'changes_diff') return workingDiff(cwd, args)
   if (name === 'changes_begin') return beginSnapshot(cwd, args.label || 'task')
   if (name === 'changes_since') return diffSince(cwd, args.snapshotId, args.maxChars)
   if (name === 'changes_snapshots') return listSnapshots(cwd)
+  if (name === 'changes_open_panel') return openPanel(cwd, { port: args.port })
   throw new Error(`Unknown tool: ${name}`)
 }
 

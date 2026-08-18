@@ -49,8 +49,13 @@ export function workingSummary(cwd = process.cwd(), scope = 'all') {
   const repo = repository(cwd)
   const args = scopeArgs(scope, true)
   const status = git(['status', '--porcelain=v1', '--untracked-files=all'], repo.root).stdout
-  const stat = git(['diff', ...args, '--stat'], repo.root).stdout
-  const numstat = git(['diff', ...args, '--numstat'], repo.root).stdout
+  let stat = git(['diff', ...args, '--stat'], repo.root).stdout
+  let numstat = git(['diff', ...args, '--numstat'], repo.root).stdout
+  if (scope !== 'staged') {
+    const untracked = untrackedStats(repo.root)
+    stat += untracked.stat
+    numstat += untracked.numstat
+  }
   return { root: repo.root, scope, status, stat, files: parseNumstat(numstat) }
 }
 
@@ -113,6 +118,25 @@ function untrackedDiff(root, onlyFile) {
     if (result.status === 1) output += result.stdout
   }
   return output
+}
+
+function untrackedStats(root) {
+  const paths = git(['ls-files', '--others', '--exclude-standard'], root).stdout.trim().split('\n').filter(Boolean)
+  let stat = ''
+  let numstat = ''
+  for (const path of paths) {
+    const content = readFileSync(join(root, path))
+    const binary = content.includes(0)
+    const added = binary ? '-' : lineCount(content.toString('utf8'))
+    stat += binary ? ` ${path} | Bin 0 -> ${content.length} bytes\n` : ` ${path} | ${added} +\n`
+    numstat += `${added}\t${binary ? '-' : 0}\t${path}\n`
+  }
+  return { stat, numstat }
+}
+
+function lineCount(text) {
+  if (!text) return 0
+  return text.split('\n').length - (text.endsWith('\n') ? 1 : 0)
 }
 
 function storePath(gitDir) {

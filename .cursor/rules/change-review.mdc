@@ -14,4 +14,6 @@ Before claiming completion:
 4. Report actionable findings first using P0-P3 severity and file/line evidence.
 5. Then summarize changed behavior, validation actually run, and remaining risks.
 
+When the user asks to see or open Changes, call `changes_open_panel` and return its localhost URL. Use the panel for visual file-by-file inspection; continue to use `changes_diff` for evidence in the written review.
+
 Do not modify files during a review unless the user asks for fixes. The MCP review tools are read-only for source files.

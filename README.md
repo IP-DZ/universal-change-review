@@ -1,6 +1,6 @@
 # Universal Change Review
 
-Local, read-only Git change review for Codex, Claude Code, Cursor, and any MCP-compatible client. Version 0.2 combines MCP tools with reusable review instructions and commands, so clients know both **how to read Changes** and **how to review them**.
+Local, read-only Git change review for Codex, Claude Code, Cursor, and any MCP-compatible client. Version 0.3 combines MCP tools, reusable review instructions, and a live local Changes panel, so clients know both **how to read Changes** and **how to review them**.
 
 It provides total workspace diffs, staged/unstaged views, file-level inspection, and task-scoped snapshots that isolate only the changes made after a task begins. Source files and the real Git index are never modified by the review tools.
 
@@ -19,6 +19,7 @@ It provides total workspace diffs, staged/unstaged views, file-level inspection,
 | `changes_begin` | Capture a task baseline without changing the real index |
 | `changes_since` | Compare the current repository with a task baseline |
 | `changes_snapshots` | List saved baselines for the current repository |
+| `changes_open_panel` | Start a live, read-only Changes panel on localhost |
 
 The MCP server also exposes two reusable prompts when the client supports MCP prompts:
 
@@ -74,6 +75,16 @@ Cursor's global MCP configuration makes the tools available in every repository.
 2. Implement and validate the requested behavior.
 3. Run `$change-review`, `/review-changes`, or the MCP `review-changes` prompt depending on the client.
 4. Review findings ordered by P0-P3 severity, followed by changed behavior, validation, and remaining risks.
+
+## Live Changes panel
+
+Ask the agent to “open Changes”, call the `changes_open_panel` MCP tool, or run:
+
+```bash
+npx -y github:IP-DZ/universal-change-review web --cwd /path/to/repo
+```
+
+The returned localhost page provides live file counts, All/Staged/Unstaged filters, task-baseline selection, and line-level per-file diffs. It binds only to `127.0.0.1`, uses a random access token, and exposes no write or revert endpoint.
 
 ## CLI
 
