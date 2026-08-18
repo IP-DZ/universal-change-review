@@ -1,0 +1,64 @@
+{
+  "name": "universal-change-review",
+  "displayName": "Universal Change Review",
+  "description": "Open a live, read-only Changes review panel from the Cursor activity bar.",
+  "version": "0.4.0",
+  "publisher": "ip-dz",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": ["Other"],
+  "keywords": ["changes", "diff", "review", "git", "cursor"],
+  "main": "./extension.js",
+  "activationEvents": [
+    "onStartupFinished",
+    "onView:universalChangeReview.launcher",
+    "onCommand:universalChangeReview.open",
+    "onCommand:universalChangeReview.refresh"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "universalChangeReview.open",
+        "title": "Universal Change Review: Open Changes"
+      },
+      {
+        "command": "universalChangeReview.refresh",
+        "title": "Universal Change Review: Refresh"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "universalChangeReview",
+          "title": "Changes Review",
+          "icon": "media/changes.svg"
+        }
+      ]
+    },
+    "views": {
+      "universalChangeReview": [
+        {
+          "type": "webview",
+          "id": "universalChangeReview.launcher",
+          "name": "Changes Review"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "universalChangeReview.open",
+          "when": "view == universalChangeReview.launcher",
+          "group": "navigation"
+        },
+        {
+          "command": "universalChangeReview.refresh",
+          "when": "view == universalChangeReview.launcher",
+          "group": "navigation"
+        }
+      ]
+    }
+  }
+}

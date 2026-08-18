@@ -1,6 +1,6 @@
 {
   "name": "universal-change-review",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Local, read-only Git change review tools for Codex, Claude Code, Cursor, and MCP clients.",
   "type": "module",
   "bin": {
@@ -8,7 +8,8 @@
   },
   "scripts": {
     "test": "node --test",
-    "check": "node --check bin/universal-change-review.js && node --test"
+    "check": "node --check bin/universal-change-review.js && node --check cursor-extension/extension.js && node --test",
+    "build:cursor": "node scripts/build-cursor-vsix.mjs"
   },
   "engines": {
     "node": ">=20"
@@ -19,5 +20,5 @@
     "type": "git",
     "url": "git+https://github.com/IP-DZ/universal-change-review.git"
   },
-  "files": ["bin", "src", "plugins", "skills", "commands", ".claude-plugin", ".cursor", ".mcp.json", "README.md", "LICENSE"]
+  "files": ["bin", "src", "plugins", "skills", "commands", "cursor-extension", "scripts/build-cursor-vsix.mjs", ".claude-plugin", ".cursor", ".mcp.json", "README.md", "LICENSE"]
 }

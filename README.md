@@ -1,6 +1,6 @@
 # Universal Change Review
 
-Local, read-only Git change review for Codex, Claude Code, Cursor, and any MCP-compatible client. Version 0.3 combines MCP tools, reusable review instructions, and a live local Changes panel, so clients know both **how to read Changes** and **how to review them**.
+Local, read-only Git change review for Codex, Claude Code, Cursor, and any MCP-compatible client. Version 0.4 adds one-click Changes entry points: a Cursor activity-bar extension and an MCP Apps launcher card for compatible Codex/ChatGPT hosts.
 
 It provides total workspace diffs, staged/unstaged views, file-level inspection, and task-scoped snapshots that isolate only the changes made after a task begins. Source files and the real Git index are never modified by the review tools.
 
@@ -40,7 +40,7 @@ codex plugin marketplace add ./universal-change-review
 codex plugin install universal-change-review@ip-dz
 ```
 
-The Codex package includes the `change-review` skill, UI metadata, starter prompts, and the MCP server definition. Invoke the skill explicitly with `$change-review`, or ask Codex to review the current Changes.
+The Codex package includes the `change-review` skill, UI metadata, starter prompts, the MCP server definition, and an MCP Apps launcher card. Invoke the skill explicitly with `$change-review`, or ask Codex to open the current Changes. Compatible hosts render a clickable **Open Changes** card; other hosts receive the same localhost URL as text.
 
 ## Claude Code
 
@@ -51,6 +51,15 @@ claude mcp add universal-change-review --scope user -- npx -y github:IP-DZ/unive
 ```
 
 ## Cursor
+
+For the closest DSH-style experience, install the bundled Cursor extension:
+
+```bash
+npm run build:cursor
+cursor --install-extension dist/universal-change-review-cursor-0.4.0.vsix --force
+```
+
+After reloading Cursor, click **Changes Review** in the bottom status bar, or use the **Changes Review** activity-bar icon. The extension automatically follows the first open workspace and opens the live panel in a Cursor editor tab. It runs the same local, read-only panel code bundled inside the extension.
 
 For a project-scoped setup, copy `.cursor/mcp.json`, `.cursor/rules/change-review.mdc`, and `.cursor/commands/review-changes.md` into a project. Then use `/review-changes` in Cursor chat.
 
@@ -109,6 +118,7 @@ npx -y github:IP-DZ/universal-change-review since --cwd /path/to/repo --id SNAPS
 ```bash
 npm test
 npm run check
+npm run build:cursor
 ```
 
 MIT © IP-DZ

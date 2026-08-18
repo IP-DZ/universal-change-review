@@ -1,6 +1,6 @@
 {
   "name": "universal-change-review",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Review total and task-scoped Git changes locally from Codex, Claude Code, Cursor, and any MCP client.",
   "author": {
     "name": "IP-DZ"
